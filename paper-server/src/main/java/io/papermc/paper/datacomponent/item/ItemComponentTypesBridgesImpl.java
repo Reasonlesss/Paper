@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemType;
 import org.bukkit.inventory.meta.trim.ArmorTrim;
 import org.bukkit.map.MapCursor;
 import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 public final class ItemComponentTypesBridgesImpl implements ItemComponentTypesBridge {
 
@@ -235,6 +236,26 @@ public final class ItemComponentTypesBridgesImpl implements ItemComponentTypesBr
     @Override
     public BlocksAttacks.Builder blocksAttacks() {
         return new PaperBlocksAttacks.BuilderImpl();
+    }
+
+    @Override
+    public BlocksAttacks.ItemDamageFunction itemDamageFunction(final float threshold, final float base, final float factor) {
+        Preconditions.checkArgument(threshold >= 0, "threshold must be a non-negative float, was %s", threshold);
+        return new PaperBlocksAttacks.ItemDamageFunctionImpl(
+            new net.minecraft.world.item.component.BlocksAttacks.ItemDamageFunction(threshold, base, factor)
+        );
+    }
+
+    @Override
+    public BlocksAttacks.DamageReduction damageReduction(final float horizontalBlockingAngle, @Nullable final RegistryKeySet<DamageType> type, final float base, final float factor) {
+        Preconditions.checkArgument(horizontalBlockingAngle > 0, "horizontalBlockingAngle must be a positive float, was %s", horizontalBlockingAngle);
+        return new PaperBlocksAttacks.DamageReductionImpl(
+            new net.minecraft.world.item.component.BlocksAttacks.DamageReduction(
+                horizontalBlockingAngle,
+                Optional.ofNullable(type).map(types -> PaperRegistrySets.convertToNms(Registries.DAMAGE_TYPE, net.minecraft.server.MinecraftServer.getServer().registryAccess().createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE).lookupProvider, types)),
+                base, factor
+            )
+        );
     }
 
     @Override

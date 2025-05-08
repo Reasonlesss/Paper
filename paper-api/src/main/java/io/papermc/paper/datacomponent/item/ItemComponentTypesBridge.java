@@ -110,6 +110,10 @@ interface ItemComponentTypesBridge {
 
     BlocksAttacks.Builder blocksAttacks();
 
+    BlocksAttacks.ItemDamageFunction itemDamageFunction(float threshold, float base, float factor);
+
+    BlocksAttacks.DamageReduction damageReduction(float horizontalBlockingAngle, @Nullable RegistryKeySet<DamageType> type, float base, float factor);
+
     TooltipDisplay.Builder tooltipDisplay();
 
     Weapon.Builder weapon();
